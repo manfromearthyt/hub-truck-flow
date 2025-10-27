@@ -1,0 +1,433 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
+  }
+  public: {
+    Tables: {
+      load_providers: {
+        Row: {
+          address: string | null
+          company_name: string
+          contact_person: string
+          contact_phone: string
+          created_at: string | null
+          email: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          company_name: string
+          contact_person: string
+          contact_phone: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          company_name?: string
+          contact_person?: string
+          contact_phone?: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "load_providers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loads: {
+        Row: {
+          assigned_at: string | null
+          created_at: string | null
+          delivery_completed_at: string | null
+          freight_amount: number
+          id: string
+          load_provider_id: string
+          loading_completed_at: string | null
+          loading_location: string
+          material_description: string
+          material_weight: number
+          status: Database["public"]["Enums"]["load_status"]
+          truck_id: string | null
+          unloading_location: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          created_at?: string | null
+          delivery_completed_at?: string | null
+          freight_amount: number
+          id?: string
+          load_provider_id: string
+          loading_completed_at?: string | null
+          loading_location: string
+          material_description: string
+          material_weight: number
+          status?: Database["public"]["Enums"]["load_status"]
+          truck_id?: string | null
+          unloading_location: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          created_at?: string | null
+          delivery_completed_at?: string | null
+          freight_amount?: number
+          id?: string
+          load_provider_id?: string
+          loading_completed_at?: string | null
+          loading_location?: string
+          material_description?: string
+          material_weight?: number
+          status?: Database["public"]["Enums"]["load_status"]
+          truck_id?: string | null
+          unloading_location?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loads_load_provider_id_fkey"
+            columns: ["load_provider_id"]
+            isOneToOne: false
+            referencedRelation: "load_providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loads_truck_id_fkey"
+            columns: ["truck_id"]
+            isOneToOne: false
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          account_number: string | null
+          amount: number
+          bank_name: string | null
+          created_at: string | null
+          id: string
+          ifsc_code: string | null
+          load_id: string
+          notes: string | null
+          payment_details: string | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          transaction_date: string | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          upi_id: string | null
+          user_id: string
+        }
+        Insert: {
+          account_number?: string | null
+          amount: number
+          bank_name?: string | null
+          created_at?: string | null
+          id?: string
+          ifsc_code?: string | null
+          load_id: string
+          notes?: string | null
+          payment_details?: string | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          transaction_date?: string | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          upi_id?: string | null
+          user_id: string
+        }
+        Update: {
+          account_number?: string | null
+          amount?: number
+          bank_name?: string | null
+          created_at?: string | null
+          id?: string
+          ifsc_code?: string | null
+          load_id?: string
+          notes?: string | null
+          payment_details?: string | null
+          payment_method?: Database["public"]["Enums"]["payment_method"]
+          transaction_date?: string | null
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
+          upi_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "loads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trucks: {
+        Row: {
+          carrying_capacity: number
+          created_at: string | null
+          driver_name: string
+          driver_phone: string
+          id: string
+          owner_name: string
+          owner_phone: string
+          truck_length: number
+          truck_number: string
+          truck_type: Database["public"]["Enums"]["truck_type"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          carrying_capacity: number
+          created_at?: string | null
+          driver_name: string
+          driver_phone: string
+          id?: string
+          owner_name: string
+          owner_phone: string
+          truck_length: number
+          truck_number: string
+          truck_type: Database["public"]["Enums"]["truck_type"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          carrying_capacity?: number
+          created_at?: string | null
+          driver_name?: string
+          driver_phone?: string
+          id?: string
+          owner_name?: string
+          owner_phone?: string
+          truck_length?: number
+          truck_number?: string
+          truck_type?: Database["public"]["Enums"]["truck_type"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trucks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      load_status:
+        | "pending"
+        | "assigned"
+        | "in_transit"
+        | "delivered"
+        | "completed"
+      payment_method: "upi" | "bank" | "cash"
+      transaction_type: "advance" | "balance"
+      truck_type: "open" | "container"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      load_status: [
+        "pending",
+        "assigned",
+        "in_transit",
+        "delivered",
+        "completed",
+      ],
+      payment_method: ["upi", "bank", "cash"],
+      transaction_type: ["advance", "balance"],
+      truck_type: ["open", "container"],
+    },
+  },
+} as const
