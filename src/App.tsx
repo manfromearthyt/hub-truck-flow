@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Trucks from "./pages/Trucks";
 import LoadProviders from "./pages/LoadProviders";
 import Loads from "./pages/Loads";
+import CashLedger from "./pages/CashLedger";
 import Reports from "./pages/Reports";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/trucks" element={<Layout><Trucks /></Layout>} />
           <Route path="/load-providers" element={<Layout><LoadProviders /></Layout>} />
           <Route path="/loads" element={<Layout><Loads /></Layout>} />
+          <Route path="/cash-ledger" element={<Layout><CashLedger /></Layout>} />
           <Route path="/reports" element={<Layout><Reports /></Layout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

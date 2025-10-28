@@ -10,7 +10,8 @@ import {
   FileText, 
   LogOut,
   Menu,
-  X
+  X,
+  Wallet
 } from "lucide-react";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
@@ -56,6 +57,7 @@ const Layout = ({ children }: LayoutProps) => {
     { href: "/trucks", icon: Truck, label: "Trucks" },
     { href: "/load-providers", icon: Users, label: "Load Providers" },
     { href: "/loads", icon: Package, label: "Loads" },
+    { href: "/cash-ledger", icon: Wallet, label: "Cash Ledger" },
     { href: "/reports", icon: FileText, label: "Reports" },
   ];
 

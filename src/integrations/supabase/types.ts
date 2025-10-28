@@ -165,7 +165,9 @@ export type Database = {
           ifsc_code: string | null
           load_id: string
           notes: string | null
+          party_name: string | null
           payment_details: string | null
+          payment_direction: string
           payment_method: Database["public"]["Enums"]["payment_method"]
           transaction_date: string | null
           transaction_type: Database["public"]["Enums"]["transaction_type"]
@@ -181,7 +183,9 @@ export type Database = {
           ifsc_code?: string | null
           load_id: string
           notes?: string | null
+          party_name?: string | null
           payment_details?: string | null
+          payment_direction?: string
           payment_method: Database["public"]["Enums"]["payment_method"]
           transaction_date?: string | null
           transaction_type: Database["public"]["Enums"]["transaction_type"]
@@ -197,7 +201,9 @@ export type Database = {
           ifsc_code?: string | null
           load_id?: string
           notes?: string | null
+          party_name?: string | null
           payment_details?: string | null
+          payment_direction?: string
           payment_method?: Database["public"]["Enums"]["payment_method"]
           transaction_date?: string | null
           transaction_type?: Database["public"]["Enums"]["transaction_type"]
@@ -224,6 +230,8 @@ export type Database = {
       trucks: {
         Row: {
           carrying_capacity: number
+          contact_person: string | null
+          contact_person_phone: string | null
           created_at: string | null
           driver_name: string
           driver_phone: string
@@ -238,6 +246,8 @@ export type Database = {
         }
         Insert: {
           carrying_capacity: number
+          contact_person?: string | null
+          contact_person_phone?: string | null
           created_at?: string | null
           driver_name: string
           driver_phone: string
@@ -252,6 +262,8 @@ export type Database = {
         }
         Update: {
           carrying_capacity?: number
+          contact_person?: string | null
+          contact_person_phone?: string | null
           created_at?: string | null
           driver_name?: string
           driver_phone?: string

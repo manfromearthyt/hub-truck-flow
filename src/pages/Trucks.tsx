@@ -14,6 +14,8 @@ export interface Truck {
   driver_phone: string;
   owner_name: string;
   owner_phone: string;
+  contact_person: string | null;
+  contact_person_phone: string | null;
   truck_type: "open" | "container";
   truck_length: number;
   carrying_capacity: number;

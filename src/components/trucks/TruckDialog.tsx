@@ -42,6 +42,8 @@ export const TruckDialog = ({
     driver_phone: "",
     owner_name: "",
     owner_phone: "",
+    contact_person: "",
+    contact_person_phone: "",
     truck_type: "open" as "open" | "container",
     truck_length: "",
     carrying_capacity: "",
@@ -55,6 +57,8 @@ export const TruckDialog = ({
         driver_phone: truck.driver_phone,
         owner_name: truck.owner_name,
         owner_phone: truck.owner_phone,
+        contact_person: truck.contact_person || "",
+        contact_person_phone: truck.contact_person_phone || "",
         truck_type: truck.truck_type,
         truck_length: truck.truck_length.toString(),
         carrying_capacity: truck.carrying_capacity.toString(),
@@ -66,6 +70,8 @@ export const TruckDialog = ({
         driver_phone: "",
         owner_name: "",
         owner_phone: "",
+        contact_person: "",
+        contact_person_phone: "",
         truck_type: "open",
         truck_length: "",
         carrying_capacity: "",
@@ -193,6 +199,29 @@ export const TruckDialog = ({
                   setFormData({ ...formData, owner_phone: e.target.value })
                 }
                 required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact_person">Contact Person (3rd Party)</Label>
+              <Input
+                id="contact_person"
+                value={formData.contact_person}
+                onChange={(e) =>
+                  setFormData({ ...formData, contact_person: e.target.value })
+                }
+                placeholder="Person responsible for truck"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact_person_phone">Contact Person Phone</Label>
+              <Input
+                id="contact_person_phone"
+                type="tel"
+                value={formData.contact_person_phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, contact_person_phone: e.target.value })
+                }
+                placeholder="Contact person mobile"
               />
             </div>
             <div className="space-y-2">
