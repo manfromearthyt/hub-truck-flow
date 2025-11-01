@@ -20,6 +20,7 @@ export interface Truck {
   truck_length: number;
   carrying_capacity: number;
   created_at: string;
+  is_active: boolean;
 }
 
 const Trucks = () => {

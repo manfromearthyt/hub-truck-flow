@@ -70,7 +70,9 @@ export type Database = {
           loading_location: string
           material_description: string
           material_weight: number
+          profit_amount: number | null
           status: Database["public"]["Enums"]["load_status"]
+          truck_freight_amount: number | null
           truck_id: string | null
           unloading_location: string
           updated_at: string | null
@@ -87,7 +89,9 @@ export type Database = {
           loading_location: string
           material_description: string
           material_weight: number
+          profit_amount?: number | null
           status?: Database["public"]["Enums"]["load_status"]
+          truck_freight_amount?: number | null
           truck_id?: string | null
           unloading_location: string
           updated_at?: string | null
@@ -104,7 +108,9 @@ export type Database = {
           loading_location?: string
           material_description?: string
           material_weight?: number
+          profit_amount?: number | null
           status?: Database["public"]["Enums"]["load_status"]
+          truck_freight_amount?: number | null
           truck_id?: string | null
           unloading_location?: string
           updated_at?: string | null
@@ -169,6 +175,7 @@ export type Database = {
           payment_details: string | null
           payment_direction: string
           payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_sequence: number | null
           transaction_date: string | null
           transaction_type: Database["public"]["Enums"]["transaction_type"]
           upi_id: string | null
@@ -187,6 +194,7 @@ export type Database = {
           payment_details?: string | null
           payment_direction?: string
           payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_sequence?: number | null
           transaction_date?: string | null
           transaction_type: Database["public"]["Enums"]["transaction_type"]
           upi_id?: string | null
@@ -205,12 +213,20 @@ export type Database = {
           payment_details?: string | null
           payment_direction?: string
           payment_method?: Database["public"]["Enums"]["payment_method"]
+          payment_sequence?: number | null
           transaction_date?: string | null
           transaction_type?: Database["public"]["Enums"]["transaction_type"]
           upi_id?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "transactions_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "load_payment_summary"
+            referencedColumns: ["load_id"]
+          },
           {
             foreignKeyName: "transactions_load_id_fkey"
             columns: ["load_id"]
@@ -236,6 +252,7 @@ export type Database = {
           driver_name: string
           driver_phone: string
           id: string
+          is_active: boolean | null
           owner_name: string
           owner_phone: string
           truck_length: number
@@ -252,6 +269,7 @@ export type Database = {
           driver_name: string
           driver_phone: string
           id?: string
+          is_active?: boolean | null
           owner_name: string
           owner_phone: string
           truck_length: number
@@ -268,6 +286,7 @@ export type Database = {
           driver_name?: string
           driver_phone?: string
           id?: string
+          is_active?: boolean | null
           owner_name?: string
           owner_phone?: string
           truck_length?: number
@@ -288,7 +307,20 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      load_payment_summary: {
+        Row: {
+          balance_to_pay: number | null
+          balance_to_receive: number | null
+          current_profit: number | null
+          expected_profit: number | null
+          load_id: string | null
+          provider_freight: number | null
+          total_paid_to_driver: number | null
+          total_received_from_provider: number | null
+          truck_freight: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

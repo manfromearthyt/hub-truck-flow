@@ -25,6 +25,7 @@ export const LoadDialog = ({ open, onOpenChange, onSuccess }: LoadDialogProps) =
     material_description: "",
     material_weight: "",
     freight_amount: "",
+    truck_freight_amount: "",
   });
 
   useEffect(() => {
@@ -47,9 +48,13 @@ export const LoadDialog = ({ open, onOpenChange, onSuccess }: LoadDialogProps) =
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const { error } = await supabase.from("loads").insert({
-        ...formData,
+        load_provider_id: formData.load_provider_id,
+        loading_location: formData.loading_location,
+        unloading_location: formData.unloading_location,
+        material_description: formData.material_description,
         material_weight: parseFloat(formData.material_weight),
         freight_amount: parseFloat(formData.freight_amount),
+        truck_freight_amount: formData.truck_freight_amount ? parseFloat(formData.truck_freight_amount) : null,
         user_id: user.id,
       });
       if (error) throw error;
@@ -83,8 +88,40 @@ export const LoadDialog = ({ open, onOpenChange, onSuccess }: LoadDialogProps) =
             <div className="space-y-2"><Label>Unloading Location *</Label><Input value={formData.unloading_location} onChange={(e) => setFormData({ ...formData, unloading_location: e.target.value })} required /></div>
             <div className="space-y-2 md:col-span-2"><Label>Material Description *</Label><Textarea value={formData.material_description} onChange={(e) => setFormData({ ...formData, material_description: e.target.value })} required /></div>
             <div className="space-y-2"><Label>Weight (tons) *</Label><Input type="number" step="0.01" value={formData.material_weight} onChange={(e) => setFormData({ ...formData, material_weight: e.target.value })} required /></div>
-            <div className="space-y-2"><Label>Freight (₹) *</Label><Input type="number" step="0.01" value={formData.freight_amount} onChange={(e) => setFormData({ ...formData, freight_amount: e.target.value })} required /></div>
+            <div className="space-y-2">
+              <Label htmlFor="freight_amount">Provider Freight Amount (₹) *</Label>
+              <Input
+                id="freight_amount"
+                type="number"
+                step="0.01"
+                value={formData.freight_amount}
+                onChange={(e) => setFormData({ ...formData, freight_amount: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="truck_freight_amount">Truck Driver Freight (₹)</Label>
+              <Input
+                id="truck_freight_amount"
+                type="number"
+                step="0.01"
+                value={formData.truck_freight_amount}
+                onChange={(e) => setFormData({ ...formData, truck_freight_amount: e.target.value })}
+                placeholder="Optional - for profit calculation"
+              />
+            </div>
           </div>
+          
+          {formData.freight_amount && formData.truck_freight_amount && (
+            <div className="bg-success/10 p-3 rounded-lg">
+              <div className="flex items-center justify-between">
+                <Label className="text-success font-semibold">Expected Profit</Label>
+                <p className="text-2xl font-bold text-success">
+                  ₹{(parseFloat(formData.freight_amount || "0") - parseFloat(formData.truck_freight_amount || "0")).toLocaleString('en-IN')}
+                </p>
+              </div>
+            </div>
+          )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={loading}>{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create Load</Button>

@@ -43,6 +43,7 @@ export const TruckList = ({
           <TableRow>
             <TableHead>Truck Number</TableHead>
             <TableHead>Type</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Driver</TableHead>
             <TableHead>Owner</TableHead>
             <TableHead>Length</TableHead>
@@ -58,6 +59,14 @@ export const TruckList = ({
                 <Badge variant={truck.truck_type === "container" ? "default" : "secondary"}>
                   {truck.truck_type}
                 </Badge>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <div className={`h-2 w-2 rounded-full ${truck.is_active ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+                  <Badge variant={truck.is_active ? 'default' : 'secondary'} className={truck.is_active ? 'bg-green-600' : ''}>
+                    {truck.is_active ? 'Available' : 'On Load'}
+                  </Badge>
+                </div>
               </TableCell>
               <TableCell>
                 <div>
