@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { LoadProvider } from "@/pages/LoadProviders";
+import { loadProviderSchema } from "@/lib/validation-schemas";
 
 interface LoadProviderDialogProps {
   open: boolean;
@@ -66,11 +67,28 @@ export const LoadProviderDialog = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const data = {
-        ...formData,
-        user_id: user.id,
+      // Validate form data
+      const validationData = {
+        company_name: formData.company_name,
+        contact_person: formData.contact_person,
+        contact_phone: formData.contact_phone,
         email: formData.email || null,
         address: formData.address || null,
+      };
+
+      const result = loadProviderSchema.safeParse(validationData);
+      if (!result.success) {
+        toast.error(result.error.errors[0].message);
+        return;
+      }
+
+      const data = {
+        company_name: result.data.company_name,
+        contact_person: result.data.contact_person,
+        contact_phone: result.data.contact_phone,
+        email: result.data.email,
+        address: result.data.address,
+        user_id: user.id,
       };
 
       if (provider) {
@@ -81,7 +99,7 @@ export const LoadProviderDialog = ({
         if (error) throw error;
         toast.success("Provider updated successfully");
       } else {
-        const { error } = await supabase.from("load_providers").insert(data);
+        const { error } = await supabase.from("load_providers").insert([data]);
         if (error) throw error;
         toast.success("Provider added successfully");
       }
@@ -89,7 +107,10 @@ export const LoadProviderDialog = ({
       onSuccess();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.message || "Error saving provider");
+      const errorMessage = error.message === 'duplicate key value violates unique constraint' 
+        ? 'A provider with this information already exists' 
+        : error.message || "Error saving provider";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

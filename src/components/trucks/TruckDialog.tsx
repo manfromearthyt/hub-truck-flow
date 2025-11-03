@@ -21,6 +21,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Truck } from "@/pages/Trucks";
+import { truckSchema } from "@/lib/validation-schemas";
 
 interface TruckDialogProps {
   open: boolean;
@@ -87,10 +88,37 @@ export const TruckDialog = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const data = {
-        ...formData,
+      // Validate form data
+      const validationData = {
+        truck_number: formData.truck_number,
+        truck_type: formData.truck_type,
+        driver_name: formData.driver_name,
+        driver_phone: formData.driver_phone,
+        owner_name: formData.owner_name,
+        owner_phone: formData.owner_phone,
+        contact_person: formData.contact_person || null,
+        contact_person_phone: formData.contact_person_phone || null,
         truck_length: parseFloat(formData.truck_length),
         carrying_capacity: parseFloat(formData.carrying_capacity),
+      };
+
+      const result = truckSchema.safeParse(validationData);
+      if (!result.success) {
+        toast.error(result.error.errors[0].message);
+        return;
+      }
+
+      const data = {
+        truck_number: result.data.truck_number,
+        truck_type: result.data.truck_type,
+        driver_name: result.data.driver_name,
+        driver_phone: result.data.driver_phone,
+        owner_name: result.data.owner_name,
+        owner_phone: result.data.owner_phone,
+        contact_person: result.data.contact_person,
+        contact_person_phone: result.data.contact_person_phone,
+        truck_length: result.data.truck_length,
+        carrying_capacity: result.data.carrying_capacity,
         user_id: user.id,
       };
 
@@ -102,7 +130,7 @@ export const TruckDialog = ({
         if (error) throw error;
         toast.success("Truck updated successfully");
       } else {
-        const { error } = await supabase.from("trucks").insert(data);
+        const { error } = await supabase.from("trucks").insert([data]);
         if (error) throw error;
         toast.success("Truck added successfully");
       }
@@ -110,7 +138,8 @@ export const TruckDialog = ({
       onSuccess();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.message || "Error saving truck");
+      const errorMessage = error.code === '23514' ? 'Invalid truck data' : error.message || "Error saving truck";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

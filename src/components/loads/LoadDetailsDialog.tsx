@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { LoadTransactionTimeline } from "./LoadTransactionTimeline";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import { transactionSchema } from "@/lib/validation-schemas";
 
 interface LoadDetailsDialogProps {
   load: any;
@@ -112,6 +113,25 @@ export const LoadDetailsDialog = ({ load, onOpenChange, onUpdate }: LoadDetailsD
       }
     }
 
+    // Validate transaction data
+    const validationData = {
+      amount: parseFloat(data.amount),
+      payment_method: data.method,
+      payment_details: data.details || null,
+      notes: data.notes || null,
+      upi_id: null,
+      bank_name: null,
+      account_number: null,
+      ifsc_code: null,
+      party_name: null,
+    };
+
+    const result = transactionSchema.safeParse(validationData);
+    if (!result.success) {
+      toast.error(result.error.errors[0].message);
+      return;
+    }
+
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -121,30 +141,30 @@ export const LoadDetailsDialog = ({ load, onOpenChange, onUpdate }: LoadDetailsD
       const sequence = existingPayments.length + 1;
       const truck = trucks.find(t => t.id === load.truck_id);
 
-      const { error } = await supabase.from("transactions").insert({
+      const { error } = await supabase.from("transactions").insert([{
         user_id: user.id,
         load_id: load.id,
         transaction_type: sequence === 1 ? "advance" : "balance",
         payment_direction: direction,
         payment_sequence: sequence,
-        amount: parseFloat(data.amount),
-        payment_method: data.method,
-        payment_details: data.details,
-        notes: data.notes,
+        amount: result.data.amount,
+        payment_method: result.data.payment_method,
+        payment_details: result.data.payment_details,
+        notes: result.data.notes,
         party_name: direction === 'received' ? load.load_providers?.company_name : truck?.driver_name || "Driver",
-      });
+      }]);
 
       if (error) throw error;
 
       // Check if load should be auto-completed
-      const newTotalReceived = direction === 'received' ? totalReceived + parseFloat(data.amount) : totalReceived;
-      const newTotalPaid = direction === 'paid' ? totalPaid + parseFloat(data.amount) : totalPaid;
+      const newTotalReceived = direction === 'received' ? totalReceived + result.data.amount : totalReceived;
+      const newTotalPaid = direction === 'paid' ? totalPaid + result.data.amount : totalPaid;
 
       if (newTotalReceived >= providerFreight && newTotalPaid >= truckFreight) {
         await supabase.from("loads").update({ status: "completed" }).eq("id", load.id);
         toast.success("🎉 Load completed! All payments settled. Truck is now available.");
       } else {
-        toast.success(`Payment recorded: ₹${parseFloat(data.amount).toLocaleString('en-IN')}`);
+        toast.success(`Payment recorded: ₹${result.data.amount.toLocaleString('en-IN')}`);
       }
 
       if (direction === 'received') {
@@ -156,7 +176,8 @@ export const LoadDetailsDialog = ({ load, onOpenChange, onUpdate }: LoadDetailsD
       fetchTransactions();
       onUpdate();
     } catch (error: any) {
-      toast.error("Failed to record payment");
+      const errorMessage = error.code === '23514' ? 'Invalid payment data' : 'Failed to record payment';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { loadSchema } from "@/lib/validation-schemas";
 
 interface LoadDialogProps {
   open: boolean;
@@ -47,7 +48,9 @@ export const LoadDialog = ({ open, onOpenChange, onSuccess }: LoadDialogProps) =
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const { error } = await supabase.from("loads").insert({
+
+      // Validate form data
+      const validationData = {
         load_provider_id: formData.load_provider_id,
         loading_location: formData.loading_location,
         unloading_location: formData.unloading_location,
@@ -55,14 +58,31 @@ export const LoadDialog = ({ open, onOpenChange, onSuccess }: LoadDialogProps) =
         material_weight: parseFloat(formData.material_weight),
         freight_amount: parseFloat(formData.freight_amount),
         truck_freight_amount: formData.truck_freight_amount ? parseFloat(formData.truck_freight_amount) : null,
+      };
+
+      const result = loadSchema.safeParse(validationData);
+      if (!result.success) {
+        toast.error(result.error.errors[0].message);
+        return;
+      }
+
+      const { error } = await supabase.from("loads").insert([{
+        load_provider_id: result.data.load_provider_id,
+        loading_location: result.data.loading_location,
+        unloading_location: result.data.unloading_location,
+        material_description: result.data.material_description,
+        material_weight: result.data.material_weight,
+        freight_amount: result.data.freight_amount,
+        truck_freight_amount: result.data.truck_freight_amount,
         user_id: user.id,
-      });
+      }]);
       if (error) throw error;
       toast.success("Load created successfully");
       onSuccess();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.message);
+      const errorMessage = error.code === '23514' ? 'Invalid data provided' : error.message;
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

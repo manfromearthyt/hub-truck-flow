@@ -224,13 +224,6 @@ export type Database = {
             foreignKeyName: "transactions_load_id_fkey"
             columns: ["load_id"]
             isOneToOne: false
-            referencedRelation: "load_payment_summary"
-            referencedColumns: ["load_id"]
-          },
-          {
-            foreignKeyName: "transactions_load_id_fkey"
-            columns: ["load_id"]
-            isOneToOne: false
             referencedRelation: "loads"
             referencedColumns: ["id"]
           },
@@ -307,20 +300,7 @@ export type Database = {
       }
     }
     Views: {
-      load_payment_summary: {
-        Row: {
-          balance_to_pay: number | null
-          balance_to_receive: number | null
-          current_profit: number | null
-          expected_profit: number | null
-          load_id: string | null
-          provider_freight: number | null
-          total_paid_to_driver: number | null
-          total_received_from_provider: number | null
-          truck_freight: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       [_ in never]: never
